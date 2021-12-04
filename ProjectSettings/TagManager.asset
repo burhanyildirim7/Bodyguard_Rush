@@ -8,6 +8,9 @@ TagManager:
   - LevelController
   - UIController
   - Elmas
+  - Missile
+  - Bodyguard
+  - Unclaimed Bodyguard
   layers:
   - Default
   - TransparentFX

@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
         _karakterPaketi.transform.rotation = Quaternion.Euler(0, 0, 0);
         _player = GameObject.FindWithTag("Player");
         _player.transform.localPosition = new Vector3(0, 1, 0);
+        
     }
     
 
