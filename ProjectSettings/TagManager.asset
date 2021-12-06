@@ -11,6 +11,24 @@ TagManager:
   - Missile
   - Bodyguard
   - Unclaimed Bodyguard
+  - Paparazi
+  - CalmBodyguard
+  - Attacker
+  - Engel
+  - SadPaparazi
+  - KareKapisi
+  - UcgenKapisi
+  - DikdortgenKapisi
+  - BizimKarakter
+  - SadHayran
+  - Obstacle
+  - ObstacleDuran
+  - ObstacleKosan
+  - KapiUcgen
+  - KapiKare
+  - KapiDikdortgen
+  - Gate
+  - FinishLine
   layers:
   - Default
   - TransparentFX
@@ -19,8 +37,8 @@ TagManager:
   - Water
   - UI
   - 
-  - 
-  - 
+  - Paparazi
+  - BizimKarakter
   - 
   - 
   - 

@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-  
+
         if (other.tag == "Elmas")
         {
             _elmasSayisi += 1;
@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    
+
 
     public void LevelStart()
     {
@@ -71,9 +71,62 @@ public class PlayerController : MonoBehaviour
         _karakterPaketi.transform.rotation = Quaternion.Euler(0, 0, 0);
         _player = GameObject.FindWithTag("Player");
         _player.transform.localPosition = new Vector3(0, 1, 0);
-        
-    }
-    
 
+    }
+
+    void test()
+    {
+        int k = 3;
+
+        int leftSideSuccessCount = 0, rightSideSuccessCount = 0;
+
+        bool leftSideSuccess = false, rightSideSuccess = false;
+        List<int> days = new List<int>();
+
+        List<int> answers = new List<int>();
+
+        for (int i = 0; i < days.Count; i++)
+        {
+            for (int j = i - k; j < i; j++)
+            {
+                if (j < days.Count)
+                    break;
+
+                if (days[j] >= days[j + 1])
+                {
+                    leftSideSuccessCount++;
+                }
+                if (leftSideSuccessCount == k)
+                {
+                    leftSideSuccess = true;
+                }
+            }
+
+            for (int j = i; j < i + k; j++)
+            {
+                if (j < days.Count)
+                    break;
+                if (days[j] <= days[j + 1])
+                {
+                    rightSideSuccessCount++;
+                }
+                if (leftSideSuccessCount == k)
+                {
+                    leftSideSuccess = true;
+                }
+            }
+
+            if (leftSideSuccess && rightSideSuccess)
+            {
+                answers.Add(days[i]);
+            }
+
+            leftSideSuccessCount = 0;
+            rightSideSuccessCount = 0;
+            leftSideSuccess = false;
+            rightSideSuccess = false;
+        }
+
+    }
 
 }

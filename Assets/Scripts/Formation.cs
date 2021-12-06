@@ -9,7 +9,7 @@ public class Formation : MonoBehaviour
     {
         Vector3 targetPosition = Vector3.left;
 
-        int rows = 3;
+        int rows = 3    ;
         float rowOffset = 0.5f;
         float yOffset = -1.0f;
         float xOffset = 1.0f;
