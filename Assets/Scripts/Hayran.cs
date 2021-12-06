@@ -19,6 +19,7 @@ public class Hayran : MonoBehaviour
             emojiHappy.SetActive(true);
 
             animator.SetBool("isIdle", false);
+            animator.SetBool("isHit", false);
             animator.SetBool("isRun", true);
 
             transform.LookAt(GameObject.Find("Player").transform);
@@ -29,8 +30,9 @@ public class Hayran : MonoBehaviour
             emojiHappy.SetActive(false);
             emojiSad.SetActive(true);
 
+            animator.SetBool("isIdle", false);
             animator.SetBool("isRun", false);
-            animator.SetBool("isIdle", true);
+            animator.SetBool("isHit", true);
         }
 
     }

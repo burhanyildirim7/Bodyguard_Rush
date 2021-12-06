@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
     
-    private GameObject Player;
+    public GameObject Player;
 
     Vector3 aradakiFark;
 

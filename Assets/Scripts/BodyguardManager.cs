@@ -30,6 +30,12 @@ public class BodyguardManager : MonoBehaviour
             other.tag = "SadPaparazi";
             this.transform.parent = null;
             transform.LookAt(other.gameObject.transform);
+
+            GetComponent<Animator>().SetBool("isIdle", false);
+            GetComponent<Animator>().SetBool("isRun", false);
+            GetComponent<Animator>().SetBool("isFall", false);
+            GetComponent<Animator>().SetBool("isPunch", true);
+
             PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null;
             this.tag = "CalmBodyguard";
         }
@@ -39,16 +45,23 @@ public class BodyguardManager : MonoBehaviour
             other.tag = "SadHayran";
             this.transform.parent = null;
             transform.LookAt(other.gameObject.transform);
+
+            GetComponent<Animator>().SetBool("isIdle", false);
+            GetComponent<Animator>().SetBool("isRun", false);
+            GetComponent<Animator>().SetBool("isFall", false);
+            GetComponent<Animator>().SetBool("isPunch", true);
+
             PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null;
             this.tag = "CalmBodyguard";
         }
-
-
-
-        if (other.tag == "Obstacle")
+        if(other.tag=="Obstacle")
         {
-            PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null ;
-            Destroy(this.gameObject);
+            this.transform.parent = null;
+            PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null;
+            GetComponent<Animator>().SetBool("isIdle", false);
+            GetComponent<Animator>().SetBool("isRun", false);
+            GetComponent<Animator>().SetBool("isPunch", false);
+            GetComponent<Animator>().SetBool("isFall", true);
         }
     }
 

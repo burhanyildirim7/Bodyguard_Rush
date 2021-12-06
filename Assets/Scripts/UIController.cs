@@ -76,6 +76,10 @@ public class UIController : MonoBehaviour
         GameController._oyunAktif = true;
         _tapToStartPanel.SetActive(false);
         _gameScreenPanel.SetActive(true);
+
+        GameObject.FindGameObjectWithTag("BizimKarakter").GetComponent<Animator>().SetBool("isIdle", false);
+        GameObject.FindGameObjectWithTag("BizimKarakter").GetComponent<Animator>().SetBool("isRun", true);
+
     }
 
     public void WinScreenPanelOpen()

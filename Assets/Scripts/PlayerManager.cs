@@ -9,14 +9,18 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject rectangleFormation, squareFormation, triangleFormation;
 
+    public GameObject fx1, fx2;
+
     private bool isKare, isDikdortgen, isUcgen;
 
     bool nullControl;
 
     public UIController uiController;
 
+    GameObject player; 
     private void Start()
     {
+        player= GameObject.FindGameObjectWithTag("BizimKarakter"); 
         isDikdortgen = true;
         Bodyguards = new List<GameObject>();
         BodyguardPositionList = new List<Vector3>();
@@ -27,8 +31,6 @@ public class PlayerManager : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
-
         if (other.tag == "Unclaimed Bodyguard")
         {
             if (isKare)
@@ -45,9 +47,28 @@ public class PlayerManager : MonoBehaviour
             }
 
         }
-        if (other.tag == "ObstacleKosan" || other.tag == "ObstacleDuran" || other.tag == "Obstacle")
+        if (other.tag == "ObstacleKosan" || other.tag == "ObstacleDuran")
         {
             GameController._oyunAktif = false;
+
+            player.GetComponent<Animator>().SetBool("isDance", false);
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isCry", true);
+
+
+            uiController.LoseScreenPanelOpen();
+        }
+
+        if (other.tag == "Obstacle")
+        {
+            GameController._oyunAktif = false;
+
+            player.GetComponent<Animator>().SetBool("isDance", false);
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isFall", true);
+
             uiController.LoseScreenPanelOpen();
         }
 
@@ -74,16 +95,42 @@ public class PlayerManager : MonoBehaviour
         }
         if (other.tag == "FinishLine")
         {
-            Vector3 bodyguardsFinishLocation = new Vector3(0f, 1f, 5f);
             GameController._oyunAktif = false;
-            for (int i = 0; i < Bodyguards.Count; i++)
-            {
-                Bodyguards[i].GetComponent<Animator>().SetBool("isRun", false);
-                Bodyguards[i].GetComponent<Animator>().SetBool("isIdle", true);
-
-                Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, bodyguardsFinishLocation.y + (float)(i * 1.75), bodyguardsFinishLocation.z);
-            }
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isIdle", true);
+            StartCoroutine(bodyguardsFinish());
         }
+    }
+
+    IEnumerator bodyguardsFinish()
+    {
+        Vector3 bodyguardsFinishLocation = new Vector3(0f, 0f, 5f);
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            Bodyguards[i].GetComponent<Animator>().SetBool("isRun", false);
+            Bodyguards[i].GetComponent<Animator>().SetBool("isIdle", true);
+        }
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = Bodyguards[i];
+            Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, bodyguardsFinishLocation.y + (float)(i * 1.75), bodyguardsFinishLocation.z);
+            yield return new WaitForSeconds(0.2f);
+        }
+        Vector3 lastBodyguardPosition = Bodyguards[Bodyguards.Count - 1].transform.position;
+        
+        player.transform.position = new Vector3(lastBodyguardPosition.x, lastBodyguardPosition.y + 1.75f, lastBodyguardPosition.z);
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = player;
+
+        player.GetComponent<Animator>().SetBool("isIdle", false);
+        player.GetComponent<Animator>().SetBool("isRun", false);
+        player.GetComponent<Animator>().SetBool("isDance", true);
+
+        fx1.SetActive(true);
+        fx2.SetActive(true);
+
+        uiController.WinScreenPanelOpen();
     }
 
     void KapiKareFormasyonu()

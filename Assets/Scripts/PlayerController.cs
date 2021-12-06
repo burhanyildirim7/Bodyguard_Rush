@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
@@ -65,6 +66,32 @@ public class PlayerController : MonoBehaviour
 
     public void LevelStart()
     {
+        GameObject mainCharacter = GameObject.FindGameObjectWithTag("BizimKarakter");
+
+        PlayerManager.BodyguardPositionList.Clear();
+        PlayerManager.Bodyguards.Clear();
+
+        foreach (var item in GameObject.FindGameObjectsWithTag("CalmBodyguard").ToList())
+        {
+            Destroy(item);
+        }
+        foreach (var item in GameObject.FindGameObjectsWithTag("SadHayran").ToList())
+        {
+            Destroy(item);
+        }
+        foreach (var item in GameObject.FindGameObjectsWithTag("Bodyguard").ToList())
+        {
+            Destroy(item);
+        }
+        foreach (var item in GameObject.FindGameObjectsWithTag("SadPaparazi").ToList())
+        {
+            Destroy(item);
+        }
+        GameObject.FindGameObjectsWithTag("CalmBodyguard").ToList().Clear();
+        GameObject.FindGameObjectsWithTag("SadHayran").ToList().Clear();
+        GameObject.FindGameObjectsWithTag("SadPaparazi").ToList().Clear();
+        GameObject.FindGameObjectsWithTag("Bodyguard").ToList().Clear();
+
         _toplananElmasSayisi = 1;
         _elmasSayisi = PlayerPrefs.GetInt("ElmasSayisi");
         _karakterPaketi.transform.position = new Vector3(0, 0, 0);
@@ -72,60 +99,19 @@ public class PlayerController : MonoBehaviour
         _player = GameObject.FindWithTag("Player");
         _player.transform.localPosition = new Vector3(0, 1, 0);
 
-    }
+        mainCharacter.GetComponent<Animator>().SetBool("isRun", false);
+        mainCharacter.GetComponent<Animator>().SetBool("isCry", false);
+        mainCharacter.GetComponent<Animator>().SetBool("isDance", false);
+        mainCharacter.GetComponent<Animator>().SetBool("isFall", false);
+        mainCharacter.GetComponent<Animator>().SetBool("isIdle", true);
 
-    void test()
-    {
-        int k = 3;
+        mainCharacter.transform.localPosition = new Vector3(0, 0, 0);
 
-        int leftSideSuccessCount = 0, rightSideSuccessCount = 0;
+        mainCharacter.GetComponent<PlayerManager>().fx1.SetActive(false);
+        mainCharacter.GetComponent<PlayerManager>().fx2.SetActive(false);
 
-        bool leftSideSuccess = false, rightSideSuccess = false;
-        List<int> days = new List<int>();
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = _player;
 
-        List<int> answers = new List<int>();
-
-        for (int i = 0; i < days.Count; i++)
-        {
-            for (int j = i - k; j < i; j++)
-            {
-                if (j < days.Count)
-                    break;
-
-                if (days[j] >= days[j + 1])
-                {
-                    leftSideSuccessCount++;
-                }
-                if (leftSideSuccessCount == k)
-                {
-                    leftSideSuccess = true;
-                }
-            }
-
-            for (int j = i; j < i + k; j++)
-            {
-                if (j < days.Count)
-                    break;
-                if (days[j] <= days[j + 1])
-                {
-                    rightSideSuccessCount++;
-                }
-                if (leftSideSuccessCount == k)
-                {
-                    leftSideSuccess = true;
-                }
-            }
-
-            if (leftSideSuccess && rightSideSuccess)
-            {
-                answers.Add(days[i]);
-            }
-
-            leftSideSuccessCount = 0;
-            rightSideSuccessCount = 0;
-            leftSideSuccess = false;
-            rightSideSuccess = false;
-        }
 
     }
 
