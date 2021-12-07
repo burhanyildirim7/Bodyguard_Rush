@@ -25,10 +25,13 @@ TagManager:
   - ObstacleDuran
   - ObstacleKosan
   - KapiUcgen
-  - KapiKare
   - KapiDikdortgen
   - Gate
   - FinishLine
+  - YatayDikdortgenKapisi
+  - DikeyDikdortgenKapisi
+  - UKapisi
+  - TersUKapisi
   layers:
   - Default
   - TransparentFX

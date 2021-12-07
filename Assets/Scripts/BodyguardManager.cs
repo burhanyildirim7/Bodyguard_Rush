@@ -25,7 +25,7 @@ public class BodyguardManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "ObstacleDuran")
+        if (other.tag == "ObstacleDuran"&&tag=="Bodyguard")
         {
             other.tag = "SadPaparazi";
             this.transform.parent = null;
@@ -40,7 +40,7 @@ public class BodyguardManager : MonoBehaviour
             this.tag = "CalmBodyguard";
         }
 
-        if(other.tag== "ObstacleKosan")
+        if(other.tag== "ObstacleKosan" && tag == "Bodyguard")
         {
             other.tag = "SadHayran";
             this.transform.parent = null;
@@ -54,7 +54,7 @@ public class BodyguardManager : MonoBehaviour
             PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null;
             this.tag = "CalmBodyguard";
         }
-        if(other.tag=="Obstacle")
+        if(other.tag=="Obstacle" && tag == "Bodyguard")
         {
             this.transform.parent = null;
             PlayerManager.Bodyguards[PlayerManager.Bodyguards.IndexOf(this.gameObject)] = null;

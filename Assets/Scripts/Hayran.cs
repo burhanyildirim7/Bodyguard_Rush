@@ -6,8 +6,6 @@ public class Hayran : MonoBehaviour
 {
     public bool _unluyeKosma = false;
     public Animator animator;
-    public LayerMask bizimKarakterLayer;
-
     public GameObject emojiHappy, emojiSad;
 
     [SerializeField] private float _runSpeed = 5f;
@@ -22,7 +20,7 @@ public class Hayran : MonoBehaviour
             animator.SetBool("isHit", false);
             animator.SetBool("isRun", true);
 
-            transform.LookAt(GameObject.Find("Player").transform);
+            transform.LookAt(GameObject.Find("MainCharacter").transform);
             transform.Translate(Vector3.forward * Time.deltaTime * _runSpeed);
         }
         if (this.tag == "SadHayran")
@@ -38,6 +36,11 @@ public class Hayran : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-
+        if (other.tag == "BizimKarakter")
+        {
+            animator.SetBool("isRun", false);
+            animator.SetBool("isHit", false);
+            animator.SetBool("isIdle", true);
+        }
     }
 }

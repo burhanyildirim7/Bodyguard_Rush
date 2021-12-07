@@ -7,21 +7,21 @@ public class PlayerManager : MonoBehaviour
     public static List<GameObject> Bodyguards;
     public static List<Vector3> BodyguardPositionList;
 
-    public GameObject rectangleFormation, squareFormation, triangleFormation;
+    public GameObject rectangleFormation, dikeyDikdortgenFormation, triangleFormation, uFormation, tersUFormation;
 
     public GameObject fx1, fx2;
 
-    private bool isKare, isDikdortgen, isUcgen;
+    private bool isDikeyDikdortgen, isDikdortgen, isUcgen, isU, isTersU;
 
     bool nullControl;
 
     public UIController uiController;
 
-    GameObject player; 
+    GameObject player;
     private void Start()
     {
-        player= GameObject.FindGameObjectWithTag("BizimKarakter"); 
-        isDikdortgen = true;
+        player = GameObject.FindGameObjectWithTag("BizimKarakter");
+        isTersU = true;
         Bodyguards = new List<GameObject>();
         BodyguardPositionList = new List<Vector3>();
         nullControl = false;
@@ -33,9 +33,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (other.tag == "Unclaimed Bodyguard")
         {
-            if (isKare)
+            if (isDikeyDikdortgen)
             {
-                BodyguardKareFormasyonu(other);
+                BodyguardDikeyDikdortgenFormasyonu(other);
             }
             else if (isDikdortgen)
             {
@@ -44,6 +44,14 @@ public class PlayerManager : MonoBehaviour
             else if (isUcgen)
             {
                 BodyguardUcgenFormasyonu(other);
+            }
+            else if (isU)
+            {
+                BodyguardUFormasyonu(other);
+            }
+            else if (isTersU)
+            {
+                BodyguardTersUFormasyonu(other);
             }
 
         }
@@ -72,26 +80,50 @@ public class PlayerManager : MonoBehaviour
             uiController.LoseScreenPanelOpen();
         }
 
-        if (other.tag == "KareKapisi")
+        if (other.tag == "DikeyDikdortgenKapisi")
         {
             isUcgen = false;
             isDikdortgen = false;
-            isKare = true;
-            KapiKareFormasyonu();
+            isU = false;
+            isTersU = false;
+            isDikeyDikdortgen = true;
+            KapiDikeyDikdortgenFormasyonu();
         }
         if (other.tag == "UcgenKapisi")
         {
             isDikdortgen = false;
-            isKare = false;
+            isDikeyDikdortgen = false;
+            isU = false;
+            isTersU = false;
             isUcgen = true;
             KapiUcgenFormasyonu();
         }
         if (other.tag == "DikdortgenKapisi")
         {
             isUcgen = false;
-            isKare = false;
+            isDikeyDikdortgen = false;
+            isU = false;
+            isTersU = false;
             isDikdortgen = true;
             KapiDikdortgenFormasyonu();
+        }
+        if (other.tag == "UKapisi")
+        {
+            isUcgen = false;
+            isDikeyDikdortgen = false;
+            isDikdortgen = false;
+            isTersU = false;
+            isU = true;
+            KapiUFormasyonu();
+        }
+        if (other.tag == "TersUKapisi")
+        {
+            isUcgen = false;
+            isDikeyDikdortgen = false;
+            isDikdortgen = false;
+            isU = false;
+            isTersU = true;
+            KapiTersUFormasyonu();
         }
         if (other.tag == "FinishLine")
         {
@@ -106,6 +138,9 @@ public class PlayerManager : MonoBehaviour
     {
         Vector3 bodyguardsFinishLocation = new Vector3(0f, 0f, 5f);
 
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
         for (int i = 0; i < Bodyguards.Count; i++)
         {
             Bodyguards[i].GetComponent<Animator>().SetBool("isRun", false);
@@ -119,7 +154,7 @@ public class PlayerManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
         Vector3 lastBodyguardPosition = Bodyguards[Bodyguards.Count - 1].transform.position;
-        
+
         player.transform.position = new Vector3(lastBodyguardPosition.x, lastBodyguardPosition.y + 1.75f, lastBodyguardPosition.z);
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = player;
 
@@ -133,7 +168,7 @@ public class PlayerManager : MonoBehaviour
         uiController.WinScreenPanelOpen();
     }
 
-    void KapiKareFormasyonu()
+    void KapiDikeyDikdortgenFormasyonu()
     {
         Bodyguards.RemoveAll(x => x == null);
         BodyguardPositionList.Clear();
@@ -142,24 +177,29 @@ public class PlayerManager : MonoBehaviour
         {
 
 
-            Bodyguards[i].transform.localPosition = new Vector3(squareFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.x,
-                            squareFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.y,
-                            squareFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.z);
+            Bodyguards[i].transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.x,
+                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.y,
+                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.z + i / 5);
 
             BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
         }
     }
-    void BodyguardKareFormasyonu(Collider bodyguard)
+    void BodyguardDikeyDikdortgenFormasyonu(Collider bodyguard)
     {
+        int rowCount = 0;
+
         bodyguard.tag = "Bodyguard";
         bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
         bodyguard.GetComponent<Animator>().SetBool("isRun", true);
 
+        rowCount = Bodyguards.Count / 5;
+
+
         bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
 
-        bodyguard.gameObject.transform.localPosition = new Vector3(squareFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.x,
-                        squareFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.y,
-                        squareFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.z);
+        bodyguard.gameObject.transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.x,
+                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.y,
+                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.z + rowCount);
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
@@ -187,9 +227,9 @@ public class PlayerManager : MonoBehaviour
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
-            Bodyguards[i].transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.x,
-                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.y,
-                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.z);
+            Bodyguards[i].transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
+                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
+                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
 
             BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
         }
@@ -206,9 +246,9 @@ public class PlayerManager : MonoBehaviour
 
         rowCount = Bodyguards.Count / 7;
 
-        bodyguard.gameObject.transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.x,
-                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.y,
-                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.z + rowCount);
+        bodyguard.gameObject.transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
+                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
+                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
@@ -238,11 +278,11 @@ public class PlayerManager : MonoBehaviour
         {
 
 
-            Bodyguards[i].transform.localPosition = new Vector3(triangleFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.x,
-                            triangleFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.y,
-                            triangleFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.z);
+            Bodyguards[i].transform.localPosition = new Vector3(triangleFormation.GetComponent<FormationPoints>().formationPoints[i % 36].localPosition.x,
+                            triangleFormation.GetComponent<FormationPoints>().formationPoints[i % 36].localPosition.y,
+                            triangleFormation.GetComponent<FormationPoints>().formationPoints[i % 36].localPosition.z);
 
-            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+            BodyguardPositionList.Add(Bodyguards[i % 36].transform.localPosition);
         }
     }
     void BodyguardUcgenFormasyonu(Collider bodyguard)
@@ -253,9 +293,112 @@ public class PlayerManager : MonoBehaviour
 
         bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
 
-        bodyguard.gameObject.transform.localPosition = new Vector3(triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.x,
-                        triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.y,
-                        triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.z);
+        bodyguard.gameObject.transform.localPosition = new Vector3(triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 36].localPosition.x,
+                        triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 36].localPosition.y,
+                        triangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 36].localPosition.z);
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (Bodyguards[i] == null)
+            {
+                Bodyguards[i] = bodyguard.gameObject;
+                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
+                nullControl = true;
+                break;
+            }
+        }
+
+        if (nullControl == false)
+        {
+            Bodyguards.Add(bodyguard.gameObject);
+            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
+        }
+        nullControl = false;
+    }
+
+
+    void KapiTersUFormasyonu()
+    {
+
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            Bodyguards[i].transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
+                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
+                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
+
+            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+        }
+    }
+    void BodyguardTersUFormasyonu(Collider bodyguard)
+    {
+        int rowCount = 0;
+
+        bodyguard.tag = "Bodyguard";
+        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
+        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
+
+        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
+
+        rowCount = Bodyguards.Count / 9;
+
+        bodyguard.gameObject.transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
+                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
+                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (Bodyguards[i] == null)
+            {
+                Bodyguards[i] = bodyguard.gameObject;
+                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
+                nullControl = true;
+                break;
+            }
+        }
+
+        if (nullControl == false)
+        {
+            Bodyguards.Add(bodyguard.gameObject);
+            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
+        }
+        nullControl = false;
+    }
+
+
+
+    void KapiUFormasyonu()
+    {
+
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            Bodyguards[i].transform.localPosition = new Vector3(uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
+                            uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
+                            uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
+
+            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+        }
+    }
+    void BodyguardUFormasyonu(Collider bodyguard)
+    {
+        int rowCount = 0;
+
+        bodyguard.tag = "Bodyguard";
+        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
+        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
+
+        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
+
+        rowCount = Bodyguards.Count / 9;
+
+        bodyguard.gameObject.transform.localPosition = new Vector3(uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
+                        uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
+                        uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
@@ -326,7 +469,7 @@ public class PlayerManager : MonoBehaviour
     }
     private void CircularRegroup()
     {
-        var policeHolderPosition = GameObject.Find("Player").transform.position;
+        var policeHolderPosition = GameObject.Find("BizimKarakter").transform.position;
         int numerator = 0;
         int denominator = 6;
         float multiplier = 0.7f;
