@@ -107,8 +107,8 @@ public class PlayerController : MonoBehaviour
 
         mainCharacter.transform.localPosition = new Vector3(0, 0, 0);
 
-        mainCharacter.GetComponent<PlayerManager>().fx1.SetActive(false);
-        mainCharacter.GetComponent<PlayerManager>().fx2.SetActive(false);
+        mainCharacter.GetComponent<PlayerManager>().fxHavaiFisek1.SetActive(false);
+        mainCharacter.GetComponent<PlayerManager>().fxHavaiFisek2.SetActive(false);
 
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = _player;
 

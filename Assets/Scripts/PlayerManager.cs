@@ -6,28 +6,47 @@ public class PlayerManager : MonoBehaviour
 {
     public static List<GameObject> Bodyguards;
     public static List<Vector3> BodyguardPositionList;
+    public static int rowChecker_TriggerEnter = 0, rowCounter_TriggerEnter = 1;
 
-    public GameObject rectangleFormation, dikeyDikdortgenFormation, triangleFormation, uFormation, tersUFormation;
+    public GameObject dikeyDikdortgenFormation, hilalFormation, ucgenFormation;//Oyunda kullanýlan formasyonlar
 
-    public GameObject fx1, fx2;
+    public GameObject rectangleFormation, triangleFormation, tersUFormation; //(!)Kullanýlmayan formasyonlar.
 
-    private bool isDikeyDikdortgen, isDikdortgen, isUcgen, isU, isTersU;
+    public GameObject finishCameraTarget;
+
+    public GameObject fxHavaiFisek1, fxHavaiFisek2;
+
+    public bool isDikeyDikdortgen, isHilal, isUcgenTest; //Oyunda kullanýlan formasyonlar
+
+    public bool isDikdortgen, isTersU, isTriangle; //(!)Kullanýlmayan formasyonlar.
+
+    bool cameraDegis;
 
     bool nullControl;
 
     public UIController uiController;
 
+
     GameObject player;
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("BizimKarakter");
-        isTersU = true;
+        isDikeyDikdortgen = true;
         Bodyguards = new List<GameObject>();
         BodyguardPositionList = new List<Vector3>();
         nullControl = false;
+        cameraDegis = false;
     }
     private void Update()
     {
+        if (cameraDegis == true)
+        {
+            finishCameraTarget.transform.Translate(Vector3.up * Time.deltaTime * GameObject.FindGameObjectWithTag("KarakterPaketi").GetComponent<KarakterPaketiMovement>()._speed * 1.75f);
+        }
+        if (GameController._oyunBekletFinish == true)
+        {
+            transform.Translate(Vector3.forward * Time.deltaTime * GameObject.FindGameObjectWithTag("KarakterPaketi").GetComponent<KarakterPaketiMovement>()._speed);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -37,22 +56,27 @@ public class PlayerManager : MonoBehaviour
             {
                 BodyguardDikeyDikdortgenFormasyonu(other);
             }
+            else if (isHilal)
+            {
+                BodyguardHilalFormasyonu(other);
+            }
+            else if (isUcgenTest)
+            {
+                BodyguardUcgenFormasyonu(other);
+            }
             else if (isDikdortgen)
             {
                 BodyguardDikdortgenFormasyonu(other);
             }
-            else if (isUcgen)
+            else if (isTriangle)
             {
-                BodyguardUcgenFormasyonu(other);
-            }
-            else if (isU)
-            {
-                BodyguardUFormasyonu(other);
+                BodyguardTriangleFormasyonu(other);
             }
             else if (isTersU)
             {
                 BodyguardTersUFormasyonu(other);
             }
+
 
         }
         if (other.tag == "ObstacleKosan" || other.tag == "ObstacleDuran")
@@ -80,11 +104,12 @@ public class PlayerManager : MonoBehaviour
             uiController.LoseScreenPanelOpen();
         }
 
+
         if (other.tag == "DikeyDikdortgenKapisi")
         {
-            isUcgen = false;
+            isTriangle = false;
             isDikdortgen = false;
-            isU = false;
+            isHilal = false;
             isTersU = false;
             isDikeyDikdortgen = true;
             KapiDikeyDikdortgenFormasyonu();
@@ -93,38 +118,39 @@ public class PlayerManager : MonoBehaviour
         {
             isDikdortgen = false;
             isDikeyDikdortgen = false;
-            isU = false;
+            isHilal = false;
             isTersU = false;
-            isUcgen = true;
-            KapiUcgenFormasyonu();
+            isTriangle = true;
+            KapiTriangleFormasyonu();
         }
         if (other.tag == "DikdortgenKapisi")
         {
-            isUcgen = false;
+            isTriangle = false;
             isDikeyDikdortgen = false;
-            isU = false;
+            isHilal = false;
             isTersU = false;
             isDikdortgen = true;
             KapiDikdortgenFormasyonu();
         }
         if (other.tag == "UKapisi")
         {
-            isUcgen = false;
+            isTriangle = false;
             isDikeyDikdortgen = false;
             isDikdortgen = false;
             isTersU = false;
-            isU = true;
-            KapiUFormasyonu();
+            isHilal = true;
+            KapiHilalFormasyonu();
         }
         if (other.tag == "TersUKapisi")
         {
-            isUcgen = false;
+            isTriangle = false;
             isDikeyDikdortgen = false;
             isDikdortgen = false;
-            isU = false;
+            isHilal = false;
             isTersU = true;
             KapiTersUFormasyonu();
         }
+
         if (other.tag == "FinishLine")
         {
             GameController._oyunAktif = false;
@@ -132,10 +158,22 @@ public class PlayerManager : MonoBehaviour
             player.GetComponent<Animator>().SetBool("isIdle", true);
             StartCoroutine(bodyguardsFinish());
         }
+        if (other.tag == "FinishDancePoint")
+        {
+            GameController._oyunBekletFinish = false;
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isDance", true);
+            fxHavaiFisek1.SetActive(true);
+            fxHavaiFisek2.SetActive(true);
+
+            uiController.WinScreenPanelOpen();
+        }
     }
 
     IEnumerator bodyguardsFinish()
     {
+        GameObject.FindGameObjectWithTag("Player").transform.position = new Vector3(0f, 1f, GameObject.FindGameObjectWithTag("Player").transform.position.z);
         Vector3 bodyguardsFinishLocation = new Vector3(0f, 0f, 5f);
 
         Bodyguards.RemoveAll(x => x == null);
@@ -145,30 +183,67 @@ public class PlayerManager : MonoBehaviour
         {
             Bodyguards[i].GetComponent<Animator>().SetBool("isRun", false);
             Bodyguards[i].GetComponent<Animator>().SetBool("isIdle", true);
+            if (i >= 25)
+            {
+                Destroy(Bodyguards[i].gameObject);
+                Bodyguards[i] = null;
+            }
         }
+        Bodyguards.RemoveAll(x => x == null);
 
+
+        cameraDegis = true;
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = finishCameraTarget;
         for (int i = 0; i < Bodyguards.Count; i++)
         {
-            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = Bodyguards[i];
             Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, bodyguardsFinishLocation.y + (float)(i * 1.75), bodyguardsFinishLocation.z);
             yield return new WaitForSeconds(0.2f);
         }
         Vector3 lastBodyguardPosition = Bodyguards[Bodyguards.Count - 1].transform.position;
 
         player.transform.position = new Vector3(lastBodyguardPosition.x, lastBodyguardPosition.y + 1.75f, lastBodyguardPosition.z);
+        cameraDegis = false;
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = player;
 
-        player.GetComponent<Animator>().SetBool("isIdle", false);
-        player.GetComponent<Animator>().SetBool("isRun", false);
-        player.GetComponent<Animator>().SetBool("isDance", true);
+        if (Bodyguards.Count == 25)
+        {
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isDance", false);
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isHappy", true);
 
-        fx1.SetActive(true);
-        fx2.SetActive(true);
+            player.transform.localRotation *= Quaternion.Euler(0, 180, 0);
 
-        uiController.WinScreenPanelOpen();
+            yield return new WaitForSeconds(1.85f);//Happy animasyonunun süresi kadar bekletiliyor. Animasyon deðiþirse burasý da deðiþcek
+
+            GameController._oyunBekletFinish = true;
+
+            player.transform.localRotation *= Quaternion.Euler(0, 180, 0);
+
+
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isDance", false);
+            player.GetComponent<Animator>().SetBool("isHappy", false);
+            player.GetComponent<Animator>().SetBool("isRun", true);
+        }
+
+        else
+        {
+            GameController._oyunBekletFinish = false;
+
+            player.GetComponent<Animator>().SetBool("isIdle", false);
+            player.GetComponent<Animator>().SetBool("isRun", false);
+            player.GetComponent<Animator>().SetBool("isHappy", false);
+            player.GetComponent<Animator>().SetBool("isDance", true);
+            fxHavaiFisek1.SetActive(true);
+            fxHavaiFisek2.SetActive(true);
+            uiController.WinScreenPanelOpen();
+        }
+
+
     }
 
-    void KapiDikeyDikdortgenFormasyonu()
+    public void KapiDikeyDikdortgenFormasyonu()
     {
         Bodyguards.RemoveAll(x => x == null);
         BodyguardPositionList.Clear();
@@ -177,9 +252,9 @@ public class PlayerManager : MonoBehaviour
         {
 
 
-            Bodyguards[i].transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.x,
-                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.y,
-                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 5].localPosition.z + i / 5);
+            Bodyguards[i].transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.x,
+                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.y,
+                            dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.z + i / 7);
 
             BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
         }
@@ -192,14 +267,143 @@ public class PlayerManager : MonoBehaviour
         bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
         bodyguard.GetComponent<Animator>().SetBool("isRun", true);
 
-        rowCount = Bodyguards.Count / 5;
+        rowCount = Bodyguards.Count / 7;
 
 
         bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
 
-        bodyguard.gameObject.transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.x,
-                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.y,
-                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 5].localPosition.z + rowCount);
+        bodyguard.gameObject.transform.localPosition = new Vector3(dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.x,
+                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.y,
+                        dikeyDikdortgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.z + rowCount);
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (Bodyguards[i] == null)
+            {
+                Bodyguards[i] = bodyguard.gameObject;
+                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
+                nullControl = true;
+                break;
+            }
+        }
+
+        if (nullControl == false)
+        {
+            Bodyguards.Add(bodyguard.gameObject);
+            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
+        }
+        nullControl = false;
+    }
+    public void KapiUcgenFormasyonu()
+    {
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
+        int rowChecker = 0;
+        int rowCounter = 1;
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+
+            Bodyguards[i].transform.localPosition = new Vector3(ucgenFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.x,
+                            ucgenFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.y,
+                            ucgenFormation.GetComponent<FormationPoints>().formationPoints[i].localPosition.z);
+
+            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+        }
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (i % (rowChecker + rowCounter) == 0 && i != 0)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    Bodyguards[j].transform.localPosition = new Vector3(Bodyguards[j].transform.localPosition.x,
+                    Bodyguards[j].transform.localPosition.y,
+                    Bodyguards[j].transform.localPosition.z + 1);
+                }
+                rowChecker += rowCounter;
+                rowCounter += 2;
+            }
+        }
+    }
+    void BodyguardUcgenFormasyonu(Collider bodyguard)
+    {
+        bodyguard.tag = "Bodyguard";
+        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
+        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
+
+
+
+        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
+
+        bodyguard.gameObject.transform.localPosition = new Vector3(ucgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.x,
+                        ucgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.y,
+                        ucgenFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count].localPosition.z);
+
+
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (Bodyguards[i] == null)
+            {
+                Bodyguards[i] = bodyguard.gameObject;
+                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
+                nullControl = true;
+                break;
+            }
+        }
+
+        if (nullControl == false)
+        {
+            Bodyguards.Add(bodyguard.gameObject);
+            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
+
+            if ((Bodyguards.Count - 1) % (rowChecker_TriggerEnter + rowCounter_TriggerEnter) == 0 && Bodyguards.Count > 1)
+            {
+                for (int i = 0; i < Bodyguards.Count - 1; i++)
+                {
+                    Bodyguards[i].transform.localPosition = new Vector3(Bodyguards[i].transform.localPosition.x,
+                        Bodyguards[i].transform.localPosition.y,
+                        Bodyguards[i].transform.localPosition.z + 1);
+                }
+                rowChecker_TriggerEnter += rowCounter_TriggerEnter;
+                rowCounter_TriggerEnter += 2;
+            }
+        }
+        nullControl = false;
+    }
+
+    public void KapiHilalFormasyonu()
+    {
+
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            Bodyguards[i].transform.localPosition = new Vector3(hilalFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.x,
+                            hilalFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.y,
+                            hilalFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.z + i / 7);
+
+            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+        }
+    }
+    void BodyguardHilalFormasyonu(Collider bodyguard)
+    {
+        int rowCount = 0;
+
+        bodyguard.tag = "Bodyguard";
+        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
+        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
+
+        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
+
+        rowCount = Bodyguards.Count / 7;
+
+        bodyguard.gameObject.transform.localPosition = new Vector3(hilalFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.x,
+                        hilalFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.y,
+                        hilalFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.z + rowCount);
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
@@ -220,16 +424,73 @@ public class PlayerManager : MonoBehaviour
         nullControl = false;
     }
 
-    void KapiDikdortgenFormasyonu()
+
+
+
+
+
+
+
+
+    public void KapiTersUFormasyonu()
+    {
+
+        Bodyguards.RemoveAll(x => x == null);
+        BodyguardPositionList.Clear();
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            Bodyguards[i].transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.x,
+                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.y,
+                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 7].localPosition.z + i / 7);
+
+            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
+        }
+    }
+    void BodyguardTersUFormasyonu(Collider bodyguard)
+    {
+        int rowCount = 0;
+
+        bodyguard.tag = "Bodyguard";
+        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
+        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
+
+        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
+
+        rowCount = Bodyguards.Count / 7;
+
+        bodyguard.gameObject.transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.x,
+                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.y,
+                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 7].localPosition.z + rowCount);
+
+        for (int i = 0; i < Bodyguards.Count; i++)
+        {
+            if (Bodyguards[i] == null)
+            {
+                Bodyguards[i] = bodyguard.gameObject;
+                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
+                nullControl = true;
+                break;
+            }
+        }
+
+        if (nullControl == false)
+        {
+            Bodyguards.Add(bodyguard.gameObject);
+            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
+        }
+        nullControl = false;
+    }
+    public void KapiDikdortgenFormasyonu()
     {
         Bodyguards.RemoveAll(x => x == null);
         BodyguardPositionList.Clear();
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
-            Bodyguards[i].transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
-                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
-                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
+            Bodyguards[i].transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 13].localPosition.x,
+                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 13].localPosition.y,
+                            rectangleFormation.GetComponent<FormationPoints>().formationPoints[i % 13].localPosition.z + i / 13);
 
             BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
         }
@@ -244,11 +505,11 @@ public class PlayerManager : MonoBehaviour
 
         bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
 
-        rowCount = Bodyguards.Count / 7;
+        rowCount = Bodyguards.Count / 13;
 
-        bodyguard.gameObject.transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
-                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
-                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
+        bodyguard.gameObject.transform.localPosition = new Vector3(rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 13].localPosition.x,
+                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 13].localPosition.y,
+                        rectangleFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 13].localPosition.z + rowCount);
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
@@ -268,8 +529,7 @@ public class PlayerManager : MonoBehaviour
         }
         nullControl = false;
     }
-
-    void KapiUcgenFormasyonu()
+    public void KapiTriangleFormasyonu()
     {
         Bodyguards.RemoveAll(x => x == null);
         BodyguardPositionList.Clear();
@@ -285,7 +545,7 @@ public class PlayerManager : MonoBehaviour
             BodyguardPositionList.Add(Bodyguards[i % 36].transform.localPosition);
         }
     }
-    void BodyguardUcgenFormasyonu(Collider bodyguard)
+    void BodyguardTriangleFormasyonu(Collider bodyguard)
     {
         bodyguard.tag = "Bodyguard";
         bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
@@ -317,107 +577,6 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    void KapiTersUFormasyonu()
-    {
-
-        Bodyguards.RemoveAll(x => x == null);
-        BodyguardPositionList.Clear();
-
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            Bodyguards[i].transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
-                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
-                            tersUFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
-
-            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
-        }
-    }
-    void BodyguardTersUFormasyonu(Collider bodyguard)
-    {
-        int rowCount = 0;
-
-        bodyguard.tag = "Bodyguard";
-        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
-        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
-
-        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
-
-        rowCount = Bodyguards.Count / 9;
-
-        bodyguard.gameObject.transform.localPosition = new Vector3(tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
-                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
-                        tersUFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
-
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            if (Bodyguards[i] == null)
-            {
-                Bodyguards[i] = bodyguard.gameObject;
-                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
-                nullControl = true;
-                break;
-            }
-        }
-
-        if (nullControl == false)
-        {
-            Bodyguards.Add(bodyguard.gameObject);
-            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
-        }
-        nullControl = false;
-    }
-
-
-
-    void KapiUFormasyonu()
-    {
-
-        Bodyguards.RemoveAll(x => x == null);
-        BodyguardPositionList.Clear();
-
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            Bodyguards[i].transform.localPosition = new Vector3(uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.x,
-                            uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.y,
-                            uFormation.GetComponent<FormationPoints>().formationPoints[i % 9].localPosition.z + i / 9);
-
-            BodyguardPositionList.Add(Bodyguards[i].transform.localPosition);
-        }
-    }
-    void BodyguardUFormasyonu(Collider bodyguard)
-    {
-        int rowCount = 0;
-
-        bodyguard.tag = "Bodyguard";
-        bodyguard.GetComponent<Animator>().SetBool("isIdle", false);
-        bodyguard.GetComponent<Animator>().SetBool("isRun", true);
-
-        bodyguard.gameObject.transform.parent = GameObject.Find("Bodyguards").transform;
-
-        rowCount = Bodyguards.Count / 9;
-
-        bodyguard.gameObject.transform.localPosition = new Vector3(uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.x,
-                        uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.y,
-                        uFormation.GetComponent<FormationPoints>().formationPoints[Bodyguards.Count % 9].localPosition.z + rowCount);
-
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            if (Bodyguards[i] == null)
-            {
-                Bodyguards[i] = bodyguard.gameObject;
-                bodyguard.gameObject.transform.localPosition = BodyguardPositionList[i];
-                nullControl = true;
-                break;
-            }
-        }
-
-        if (nullControl == false)
-        {
-            Bodyguards.Add(bodyguard.gameObject);
-            BodyguardPositionList.Add(bodyguard.gameObject.transform.localPosition);
-        }
-        nullControl = false;
-    }
 
 
 
@@ -426,71 +585,4 @@ public class PlayerManager : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-    void KareFormation()
-    {
-        int columns = 4;
-
-        int space = 1;
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            float posX = (i % columns) * space;
-            float posZ = (i / columns) * space;
-            Bodyguards[i].transform.localPosition = new Vector3(transform.position.x + posX, 0, transform.position.z + posZ);
-        }
-    }
-
-
-
-
-
-
-    void DikdortgenFormation()
-    {
-        int rowNumber = 0;
-
-        for (int i = 0; i < Bodyguards.Count; i++)
-        {
-            if (i % 7 == 0)
-                rowNumber++;
-
-            if (Bodyguards[i] != null)
-                Bodyguards[i].transform.position = new Vector3(rectangleFormation.transform.position.x + (i % 7 - 3), rectangleFormation.transform.position.y, rectangleFormation.transform.position.z + (rowNumber));
-        }
-    }
-    private void CircularRegroup()
-    {
-        var policeHolderPosition = GameObject.Find("BizimKarakter").transform.position;
-        int numerator = 0;
-        int denominator = 6;
-        float multiplier = 0.7f;
-
-        for (int i = 1; i < Bodyguards.Count; i++)
-            if (Bodyguards[i] != null)
-            {
-                if (numerator / denominator >= 1)
-                {
-                    numerator = 0;
-                    denominator += 6;
-                    multiplier += 0.7f;
-                }
-                numerator++;
-                float angle = numerator * (2 * Mathf.PI / denominator);
-
-                float x = Mathf.Cos(angle) * multiplier;
-                float y = Mathf.Sin(angle) * multiplier;
-
-                var targetPosition = new Vector3(policeHolderPosition.x + x, policeHolderPosition.y, policeHolderPosition.z + y);
-                Bodyguards[i].transform.position = Vector3.Lerp(Bodyguards[i].transform.position, targetPosition, 0.1f);
-            }
-    }
 }

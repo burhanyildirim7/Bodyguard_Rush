@@ -11,7 +11,7 @@ public class Hayran : MonoBehaviour
     [SerializeField] private float _runSpeed = 5f;
     void FixedUpdate()
     {
-        if (_unluyeKosma && this.tag == "ObstacleKosan")
+        if (_unluyeKosma && this.tag == "ObstacleKosan" && GameController._oyunAktif==true)
         {
             emojiSad.SetActive(false);
             emojiHappy.SetActive(true);

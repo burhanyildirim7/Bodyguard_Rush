@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class KarakterPaketiMovement : MonoBehaviour
 {
-    [SerializeField] private float _speed;
+     public float _speed;
 
     void Start()
     {
-     
+
     }
 
 
@@ -22,7 +22,7 @@ public class KarakterPaketiMovement : MonoBehaviour
         {
 
         }
-        
+
     }
 
 }

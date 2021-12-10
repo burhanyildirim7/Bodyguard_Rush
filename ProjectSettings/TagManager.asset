@@ -32,6 +32,8 @@ TagManager:
   - DikeyDikdortgenKapisi
   - UKapisi
   - TersUKapisi
+  - FinishDancePoint
+  - FinishCameraTarget
   layers:
   - Default
   - TransparentFX
