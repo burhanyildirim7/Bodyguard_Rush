@@ -15,8 +15,8 @@ public class FormationButtons : MonoBehaviour
         playerManager.isDikeyDikdortgen = false;
         playerManager.isHilal = false;
         playerManager.isDikdortgen = false;
-        playerManager.isTersU = false;
-        playerManager.isUcgenTest = true;
+        playerManager.isWifi = false;
+        playerManager.isUcgen = true;
 
         playerManager.KapiUcgenFormasyonu();
     }
@@ -24,24 +24,26 @@ public class FormationButtons : MonoBehaviour
     {
         playerManager.isTriangle = false;
         playerManager.isHilal = false;
-        playerManager.isTersU = false;
+        playerManager.isWifi = false;
         playerManager.isDikdortgen = false;
-        playerManager.isUcgenTest = false;
+        playerManager.isUcgen = false;
         playerManager.isDikeyDikdortgen = true;
 
         playerManager.KapiDikeyDikdortgenFormasyonu();
     }
-    public void FormationButton_Hilal()
+
+    public void FormationButton_Wifi()
     {
         playerManager.isTriangle = false;
         playerManager.isDikeyDikdortgen = false;
-        playerManager.isTersU = false;
+        playerManager.isHilal = false;
         playerManager.isDikdortgen = false;
-        playerManager.isUcgenTest = false;
-        playerManager.isHilal = true;
+        playerManager.isUcgen = false;
+        playerManager.isWifi = true;
 
-        playerManager.KapiHilalFormasyonu();
+        playerManager.KapiWifiFormasyonu();
     }
+   
 
 
 
@@ -54,8 +56,8 @@ public class FormationButtons : MonoBehaviour
         playerManager.isTriangle = false;
         playerManager.isDikeyDikdortgen = false;
         playerManager.isHilal = false;
-        playerManager.isTersU = false;
-        playerManager.isUcgenTest = false;
+        playerManager.isWifi = false;
+        playerManager.isUcgen = false;
         playerManager.isDikdortgen = true;
 
         playerManager.KapiDikdortgenFormasyonu();
@@ -64,25 +66,25 @@ public class FormationButtons : MonoBehaviour
     {
         playerManager.isDikeyDikdortgen = false;
         playerManager.isHilal = false;
-        playerManager.isTersU = false;
+        playerManager.isWifi = false;
         playerManager.isDikdortgen = false;
-        playerManager.isUcgenTest = false;
+        playerManager.isUcgen = false;
         playerManager.isTriangle = true;
 
         playerManager.KapiTriangleFormasyonu();
     }
-    public void FormationButton_TersU()
+
+    public void FormationButton_Hilal()
     {
         playerManager.isTriangle = false;
         playerManager.isDikeyDikdortgen = false;
-        playerManager.isHilal = false;
+        playerManager.isWifi = false;
         playerManager.isDikdortgen = false;
-        playerManager.isUcgenTest = false;
-        playerManager.isTersU = true;
+        playerManager.isUcgen = false;
+        playerManager.isHilal = true;
 
-        playerManager.KapiTersUFormasyonu();
+        playerManager.KapiHilalFormasyonu();
     }
-
 
 
 }

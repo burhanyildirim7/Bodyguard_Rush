@@ -110,6 +110,9 @@ public class PlayerController : MonoBehaviour
         mainCharacter.GetComponent<PlayerManager>().fxHavaiFisek1.SetActive(false);
         mainCharacter.GetComponent<PlayerManager>().fxHavaiFisek2.SetActive(false);
 
+        PlayerManager.rowChecker_TriggerEnter = 0;
+        PlayerManager.rowCounter_TriggerEnter = 1;
+
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = _player;
 
 

@@ -5,6 +5,5 @@ using UnityEngine;
 public class FormationPoints : MonoBehaviour
 {
     public List<Transform> formationPoints;
-    
-
+   
 }

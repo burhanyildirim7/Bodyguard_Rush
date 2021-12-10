@@ -1044,19 +1044,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dikeyDikdortgenFormation: {fileID: 8570165746610132950}
-  hilalFormation: {fileID: 4696414586678151091}
+  wifiFormation: {fileID: 5423786027038596071, guid: adbeaab49b127a64abeeab7560d28b49, type: 3}
   ucgenFormation: {fileID: 256342807178834310}
   rectangleFormation: {fileID: 7180229016964661904, guid: 1a67002c93338804c8928a8e942ee5e2, type: 3}
   triangleFormation: {fileID: 5734450663515203439}
-  tersUFormation: {fileID: 5725576577493242325}
+  hilalFormation: {fileID: 4696414586678151091}
   finishCameraTarget: {fileID: 3693275860662971718, guid: 0254d484a62c93e43a359bdb724d7746, type: 3}
   fxHavaiFisek1: {fileID: 4335527873387743984}
   fxHavaiFisek2: {fileID: 5987410120453880912}
   isDikeyDikdortgen: 0
-  isHilal: 0
-  isUcgenTest: 0
+  isWifi: 0
+  isUcgen: 0
   isDikdortgen: 0
-  isTersU: 0
+  isHilal: 0
   isTriangle: 0
   uiController: {fileID: 0}
 --- !u!1 &8999323192785004433
@@ -2465,11 +2465,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: adbeaab49b127a64abeeab7560d28b49, type: 3}
---- !u!1 &5725576577493242325 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5423786027038596071, guid: adbeaab49b127a64abeeab7560d28b49, type: 3}
-  m_PrefabInstance: {fileID: 301878787473459762}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8651768205196649690 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8944496853531438824, guid: adbeaab49b127a64abeeab7560d28b49, type: 3}

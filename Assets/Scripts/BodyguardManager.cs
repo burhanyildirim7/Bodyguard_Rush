@@ -10,12 +10,6 @@ public class BodyguardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        /*if (tag == "Attacker" && !angryEmoji.activeSelf)
-        {
-            coolEmoji.SetActive(false);
-            angryEmoji.SetActive(true);
-        }*/
         if (tag == "CalmBodyguard" && !coolEmoji.activeSelf)
         {
             angryEmoji.SetActive(false);
