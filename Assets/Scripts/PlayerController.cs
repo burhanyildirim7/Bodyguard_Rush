@@ -97,7 +97,7 @@ public class PlayerController : MonoBehaviour
         _karakterPaketi.transform.position = new Vector3(0, 0, 0);
         _karakterPaketi.transform.rotation = Quaternion.Euler(0, 0, 0);
         _player = GameObject.FindWithTag("Player");
-        _player.transform.localPosition = new Vector3(0, 1, 0);
+        _player.transform.localPosition = new Vector3(0, 0, 0);
 
         mainCharacter.GetComponent<Animator>().SetBool("isRun", false);
         mainCharacter.GetComponent<Animator>().SetBool("isCry", false);
