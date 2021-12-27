@@ -8,17 +8,17 @@ public class PlayerManager : MonoBehaviour
     public static List<Vector3> BodyguardPositionList;
     public static int rowChecker_TriggerEnter = 0, rowCounter_TriggerEnter = 1;
 
-    public GameObject dikeyDikdortgenFormation, wifiFormation, ucgenFormation;//Oyunda kullanýlan formasyonlar
+    public GameObject dikeyDikdortgenFormation, wifiFormation, ucgenFormation;//Oyunda kullan?lan formasyonlar
 
-    public GameObject rectangleFormation, triangleFormation, hilalFormation; //(!)Kullanýlmayan formasyonlar.
+    public GameObject rectangleFormation, triangleFormation, hilalFormation; //(!)Kullan?lmayan formasyonlar.
 
     public GameObject finishCameraTarget;
 
     public GameObject fxHavaiFisek1, fxHavaiFisek2;
 
-    public bool isDikeyDikdortgen, isWifi, isUcgen; //Oyunda kullanýlan formasyonlar
+    public bool isDikeyDikdortgen, isWifi, isUcgen; //Oyunda kullan?lan formasyonlar
 
-    public bool isDikdortgen, isHilal, isTriangle; //(!)Kullanýlmayan formasyonlar.
+    public bool isDikdortgen, isHilal, isTriangle; //(!)Kullan?lmayan formasyonlar.
 
     bool cameraDegis;
 
@@ -65,7 +65,7 @@ public class PlayerManager : MonoBehaviour
                 BodyguardUcgenFormasyonu(other);
             }
 
-            //Kullanýlmayanlar
+            //Kullan?lmayanlar
             else if (isDikdortgen)
             {
                 BodyguardDikdortgenFormasyonu(other);
@@ -91,7 +91,7 @@ public class PlayerManager : MonoBehaviour
             player.GetComponent<Animator>().SetBool("isIdle", false);
             player.GetComponent<Animator>().SetBool("isCry", true);
 
-
+            uiController.LevelSonuElmasSayisi(0);
             uiController.LoseScreenPanelOpen();
         }
 
@@ -104,6 +104,7 @@ public class PlayerManager : MonoBehaviour
             player.GetComponent<Animator>().SetBool("isIdle", false);
             player.GetComponent<Animator>().SetBool("isFall", true);
 
+            uiController.LevelSonuElmasSayisi(0);
             uiController.LoseScreenPanelOpen();
         }
 
@@ -169,7 +170,7 @@ public class PlayerManager : MonoBehaviour
             player.GetComponent<Animator>().SetBool("isDance", true);
             fxHavaiFisek1.SetActive(true);
             fxHavaiFisek2.SetActive(true);
-
+            uiController.LevelSonuElmasSayisi((int)(Bodyguards.Count * (Bodyguards.Count / 2.5f)));
             uiController.WinScreenPanelOpen();
         }
     }
@@ -177,7 +178,7 @@ public class PlayerManager : MonoBehaviour
     IEnumerator bodyguardsFinish()
     {
         GameObject.FindGameObjectWithTag("Player").transform.position = new Vector3(0f, 1f, GameObject.FindGameObjectWithTag("Player").transform.position.z);
-        Vector3 bodyguardsFinishLocation = new Vector3(0f, 0f, 5f);
+        Vector3 bodyguardsFinishLocation = new Vector3(0f, 0f, 10f);
 
         Bodyguards.RemoveAll(x => x == null);
         BodyguardPositionList.Clear();
@@ -200,7 +201,7 @@ public class PlayerManager : MonoBehaviour
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
-            Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, bodyguardsFinishLocation.y + (float)(i * 1.75), bodyguardsFinishLocation.z);
+            Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, (bodyguardsFinishLocation.y + (float)(i * 1.75)) - 1, bodyguardsFinishLocation.z);
             yield return new WaitForSeconds(0.2f);
         }
         Vector3 lastBodyguardPosition = Bodyguards[Bodyguards.Count - 1].transform.position;
@@ -209,7 +210,7 @@ public class PlayerManager : MonoBehaviour
         cameraDegis = false;
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = player;
 
-        if (Bodyguards.Count == 25) //Level sonu max bodyguard sayýsý
+        if (Bodyguards.Count == 25) //Level sonu max bodyguard say?s?
         {
             player.GetComponent<Animator>().SetBool("isIdle", false);
             player.GetComponent<Animator>().SetBool("isDance", false);
@@ -218,7 +219,7 @@ public class PlayerManager : MonoBehaviour
 
             player.transform.localRotation *= Quaternion.Euler(0, 180, 0);
 
-            yield return new WaitForSeconds(1.85f); //Happy animasyonunun süresi kadar bekletiliyor. Animasyon deðiþirse burasý da deðiþcek
+            yield return new WaitForSeconds(1.85f); //Happy animasyonunun s?resi kadar bekletiliyor. Animasyon de?i?irse buras? da de?i?cek
 
             GameController._oyunBekletFinish = true;
 
@@ -241,6 +242,7 @@ public class PlayerManager : MonoBehaviour
             player.GetComponent<Animator>().SetBool("isDance", true);
             fxHavaiFisek1.SetActive(true);
             fxHavaiFisek2.SetActive(true);
+            uiController.LevelSonuElmasSayisi((int)(Bodyguards.Count * (Bodyguards.Count / 2.5f)));
             uiController.WinScreenPanelOpen();
         }
 
@@ -431,7 +433,7 @@ public class PlayerManager : MonoBehaviour
 
 
 
-    //Kullanýlmayan formasyonlar
+    //Kullan?lmayan formasyonlar
     public void KapiHilalFormasyonu()
     {
 
