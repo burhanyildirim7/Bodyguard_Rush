@@ -26,7 +26,6 @@ public class PlayerManager : MonoBehaviour
 
     public UIController uiController;
 
-
     GameObject player;
     private void Start()
     {
@@ -52,6 +51,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (other.tag == "Unclaimed Bodyguard")
         {
+
+            MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
             if (isDikeyDikdortgen)
             {
                 BodyguardDikeyDikdortgenFormasyonu(other);
@@ -84,6 +86,8 @@ public class PlayerManager : MonoBehaviour
         }
         if (other.tag == "ObstacleKosan" || other.tag == "ObstacleDuran")
         {
+            MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
             GameController._oyunAktif = false;
 
             player.GetComponent<Animator>().SetBool("isDance", false);
@@ -97,6 +101,8 @@ public class PlayerManager : MonoBehaviour
 
         if (other.tag == "Obstacle")
         {
+            MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
             GameController._oyunAktif = false;
 
             player.GetComponent<Animator>().SetBool("isDance", false);
@@ -201,6 +207,8 @@ public class PlayerManager : MonoBehaviour
 
         for (int i = 0; i < Bodyguards.Count; i++)
         {
+            //MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.HeavyImpact);
+
             Bodyguards[i].transform.localPosition = new Vector3(bodyguardsFinishLocation.x, (bodyguardsFinishLocation.y + (float)(i * 1.75)) - 1, bodyguardsFinishLocation.z);
             yield return new WaitForSeconds(0.2f);
         }
