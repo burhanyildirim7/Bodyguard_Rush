@@ -26,7 +26,7 @@ public class LevelController : MonoBehaviour
         {
 
         }
-       // PlayerPrefs.SetInt("LevelNumarası", 0);
+        // PlayerPrefs.SetInt("LevelNumarası", 0);
 
         _levelNumarasi = PlayerPrefs.GetInt("LevelNumarasi");
         _levelNumber = PlayerPrefs.GetInt("LevelNumber");
@@ -35,7 +35,7 @@ public class LevelController : MonoBehaviour
         if (_levelNumber < _toplamLevelSayisi)
         {
             _levelNumarasi = PlayerPrefs.GetInt("LevelNumarasi");
-            güncelLevel  = Instantiate(_leveller[_levelNumarasi], new Vector3(0, 0, 0), Quaternion.identity);
+            güncelLevel = Instantiate(_leveller[_levelNumarasi], new Vector3(0, 0, 0), Quaternion.identity);
             Elephant.LevelStarted(_levelNumber);
         }
         else
@@ -45,12 +45,12 @@ public class LevelController : MonoBehaviour
             güncelLevel = Instantiate(_leveller[_levelNumarasi], new Vector3(0, 0, 0), Quaternion.identity);
             Elephant.LevelStarted(_levelNumber);
         }
-       
+
 
 
     }
 
-    
+
     public void LevelDegistir()
     {
         Destroy(güncelLevel);
@@ -74,7 +74,7 @@ public class LevelController : MonoBehaviour
         {
             _levelNumarasi = PlayerPrefs.GetInt("LevelNumarasi");
             int _geciciLevelNumarasi = _levelNumarasi;
-            
+
             _levelNumarasi = Random.Range(0, _toplamLevelSayisi);
 
             if (_levelNumarasi == _geciciLevelNumarasi)
@@ -89,13 +89,14 @@ public class LevelController : MonoBehaviour
                 PlayerPrefs.SetInt("LevelNumber", _levelNumber);
                 Elephant.LevelStarted(_levelNumber);
             }
-        
 
-            
+
+
 
         }
 
-        
+        GameObject.FindGameObjectWithTag("FinishCameraTarget").transform.localPosition = new Vector3(0, 0, -1);
+
     }
 
     public void LevelRestart()
@@ -118,5 +119,7 @@ public class LevelController : MonoBehaviour
             güncelLevel = Instantiate(_leveller[_levelNumarasi], new Vector3(0, 0, 0), Quaternion.identity);
             Elephant.LevelStarted(_levelNumber);
         }
+
+        GameObject.FindGameObjectWithTag("FinishCameraTarget").transform.localPosition = new Vector3(0, 0, -1);
     }
 }

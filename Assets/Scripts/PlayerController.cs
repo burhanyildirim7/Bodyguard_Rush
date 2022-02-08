@@ -116,6 +116,8 @@ public class PlayerController : MonoBehaviour
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>().Player = _player;
 
 
+
+
     }
 
 }
